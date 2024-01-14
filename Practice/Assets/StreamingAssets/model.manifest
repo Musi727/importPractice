@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1341118262
+CRC: 2941030112
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 808067b67113bb6640886162826d3e84
+    Hash: 349f3d970026c3c8a6a31b8879389cd5
   TypeTreeHash:
     serializedVersion: 2
-    Hash: d90b0198e7494fd81da97094c76d413a
+    Hash: 1eff53d114720a95b67621a8bf3d0e92
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -21,8 +21,6 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 43
   Script: {instanceID: 0}
-- Class: 48
-  Script: {instanceID: 0}
 - Class: 65
   Script: {instanceID: 0}
 - Class: 135
@@ -31,4 +29,5 @@ SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Resources/Model/Cube1.prefab
 - Assets/Resources/Model/Sphere1.prefab
-Dependencies: []
+Dependencies:
+- E:/000-Study/800-GitKraken/importPractice/Practice/AssetBundles/StandaloneWindows/material
