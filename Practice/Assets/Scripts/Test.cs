@@ -6,7 +6,7 @@ public class Test : MonoBehaviour
 {
     void Start()
     {
-        ABMgr.Instance.LoadRes<GameObject>("model","Cube1");       
+        ABMgr.Instance.LoadResAsyncAB<GameObject>("model","Cube1");       
     }
 
     // Update is called once per frame
