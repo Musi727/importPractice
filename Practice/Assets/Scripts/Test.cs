@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
-        
+        ABMgr.Instance.LoadRes<GameObject>("model","Cube1");       
     }
 
     // Update is called once per frame
