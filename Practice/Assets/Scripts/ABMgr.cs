@@ -4,25 +4,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class ABMgr
+public class ABMgr : BaseManager<ABMgr>
 {
-    private static ABMgr _instance;
-    public static ABMgr Instance
-    {
-        get
-        {
-            if(_instance == null)
-                _instance = new ABMgr();
-            return _instance;
-        }
-    }
-
-    private ABMgr(){}
-    private Dictionary<string,AssetBundle> abDic = new Dictionary<string, AssetBundle>();
-    private AssetBundle _abMain;
-    private AssetBundleManifest _abManifest;
-    private string[] _dependencise;
-    private GameObject _gameObject;
+    private Dictionary<string,AssetBundle> abDic = new Dictionary<string, AssetBundle>(); //ab包容器，用于记录加载好的ab包，避免重复加载
+    private AssetBundle _abMain; // 用于存放加载的主包
+    private AssetBundleManifest _abManifest; //用于存放加载好的主包的manifest
+    private string[] _dependencise; //用于存储从主包的manifest 读取出来的 所有 依赖
+    private GameObject _gameObject; //作为容器获得异步加载的资源
     public void LoadAB(string abName)
     {
         //加载abName包
@@ -46,6 +34,11 @@ public class ABMgr
             abDic.Add(abName,AssetBundle.LoadFromFile(Application.streamingAssetsPath +"/"+ abName));
         }
     }
+    /// <summary>
+    /// 通过该方法开启协程，实现异步加载AB包
+    /// </summary>
+    /// <param name="abName"></param>
+    /// <param name="callback"></param>
     public void LoadABAsync(string abName,UnityAction callback)
     {
         MonoMgr.Instance.StartCoroutine(ReallyLoadABAsync(abName,callback));
@@ -109,22 +102,28 @@ public class ABMgr
         return obj;
     }
     /// <summary>
-    /// 同步加载资源，异步加载AB包
+    /// 异步加载资源，异步加载协程
     /// </summary>
     /// <typeparam name="T">资源类型</typeparam>
     /// <param name="abName">资源所在的AB包名称</param>
     /// <param name="resName">资源名称</param>
     /// <returns></returns>
-    public T LoadResAsyncAB<T>(string abName,string resName)where T:Object
+    public T LoadResAsync<T>(string abName,string resName)where T:Object
     {
         T gameObject = null;
         LoadABAsync(abName, () =>
         {
-            MonoMgr.Instance.StartCoroutine(LoadRes<T>(abName,resName));
+            MonoMgr.Instance.StartCoroutine(ReallyLoadResAsync<T>(abName,resName));
         });
         return gameObject;
     }
-    public IEnumerator LoadRes<T>(string abName,string resName) where T: Object
+    /// <summary>
+    /// 该协程用于异步加载资源
+    /// </summary>
+    /// <typeparam name="T">资源类型</typeparam>
+    /// <param name="abName">资源所在的AB包名称</param>
+    /// <param name="resName">资源名称</param>
+    public IEnumerator ReallyLoadResAsync<T>(string abName,string resName) where T: Object
     {
         AssetBundleRequest abr = abDic[abName].LoadAssetAsync<T>(resName);
         yield return abr;
