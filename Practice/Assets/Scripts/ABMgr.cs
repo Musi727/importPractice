@@ -22,6 +22,7 @@ public class ABMgr
     private AssetBundle _abMain;
     private AssetBundleManifest _abManifest;
     private string[] _dependencise;
+    private GameObject _gameObject;
     public void LoadAB(string abName)
     {
         //加载abName包
@@ -107,20 +108,32 @@ public class ABMgr
         }
         return obj;
     }
+    /// <summary>
+    /// 同步加载资源，异步加载AB包
+    /// </summary>
+    /// <typeparam name="T">资源类型</typeparam>
+    /// <param name="abName">资源所在的AB包名称</param>
+    /// <param name="resName">资源名称</param>
+    /// <returns></returns>
     public T LoadResAsyncAB<T>(string abName,string resName)where T:Object
     {
         T gameObject = null;
         LoadABAsync(abName, () =>
         {
-            //加载资源
-            T obj = abDic[abName].LoadAsset<T>(resName);
-            if (obj is GameObject)
-            {
-                //实例化
-                obj = GameObject.Instantiate(obj);
-            }
-            gameObject = obj;
+            MonoMgr.Instance.StartCoroutine(LoadRes<T>(abName,resName));
         });
         return gameObject;
+    }
+    public IEnumerator LoadRes<T>(string abName,string resName) where T: Object
+    {
+        AssetBundleRequest abr = abDic[abName].LoadAssetAsync<T>(resName);
+        yield return abr;
+        T obj = abr.asset as T;
+        if (obj is GameObject)
+        {
+            //实例化
+            _gameObject = obj as GameObject;
+            GameObject.Instantiate(obj);
+        }
     }
 }
